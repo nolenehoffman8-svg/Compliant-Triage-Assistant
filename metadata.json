@@ -1,0 +1,6 @@
+{
+  "name": "Complaint Triage Assistant",
+  "description": "Healthcare complaint triage and grievance management platform to prioritize, assess clinical risks, and route patient feedback safely.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
