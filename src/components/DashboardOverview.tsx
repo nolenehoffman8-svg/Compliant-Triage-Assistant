@@ -12,6 +12,7 @@ import {
   Scale,
   FileCheck,
   HeartPulse,
+  Upload,
 } from 'lucide-react';
 import {
   ComplaintRecord,
@@ -32,6 +33,7 @@ interface DashboardOverviewProps {
     route?: EscalationRoute;
   }) => void;
   onStartNewTriage: () => void;
+  onNavigateToUpload: () => void;
 }
 
 const ALL_RISKS: RiskType[] = [
@@ -63,6 +65,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
   onSelectComplaint,
   onNavigateToQueueWithFilter,
   onStartNewTriage,
+  onNavigateToUpload,
 }) => {
   // Aggregate Metrics
   const total = complaints.length;
@@ -149,11 +152,18 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               className="px-4 py-2.5 bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs sm:text-sm rounded-xl shadow-lg transition-all active:scale-95 flex items-center space-x-2"
             >
               <Activity className="w-4 h-4" />
-              <span>Triage Incoming Complaint</span>
+              <span>Triage Single Complaint</span>
+            </button>
+            <button
+              onClick={onNavigateToUpload}
+              className="px-3.5 py-2.5 bg-teal-900/40 hover:bg-teal-900/70 text-teal-200 font-bold text-xs sm:text-sm rounded-xl border border-teal-500/40 transition-all flex items-center space-x-2"
+            >
+              <Upload className="w-4 h-4 text-teal-300" />
+              <span>Upload Complaints Data Source</span>
             </button>
             <button
               onClick={() => onNavigateToQueueWithFilter({})}
-              className="px-4 py-2.5 bg-slate-800/90 hover:bg-slate-700 text-white font-medium text-xs sm:text-sm rounded-xl border border-slate-700 transition-all flex items-center space-x-2"
+              className="px-3.5 py-2.5 bg-slate-800/90 hover:bg-slate-700 text-white font-medium text-xs sm:text-sm rounded-xl border border-slate-700 transition-all flex items-center space-x-2"
             >
               <span>Explore All {total} Cases</span>
               <ArrowRight className="w-4 h-4 text-slate-400" />

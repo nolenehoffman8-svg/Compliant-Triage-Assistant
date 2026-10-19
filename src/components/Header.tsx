@@ -8,12 +8,13 @@ import {
   PlusCircle,
   Bell,
   CheckCircle2,
+  Upload,
 } from 'lucide-react';
 import { ComplaintRecord } from '../types/triage';
 
 interface HeaderProps {
-  activeTab: 'dashboard' | 'triage' | 'queue';
-  setActiveTab: (tab: 'dashboard' | 'triage' | 'queue') => void;
+  activeTab: 'dashboard' | 'triage' | 'queue' | 'upload';
+  setActiveTab: (tab: 'dashboard' | 'triage' | 'queue' | 'upload') => void;
   complaints: ComplaintRecord[];
   onOpenNewTriage: () => void;
   onOpenReference: () => void;
@@ -30,16 +31,12 @@ export const Header: React.FC<HeaderProps> = ({
     (c) => c.triage.severityLevel === 4 && c.status !== 'Resolved'
   ).length;
 
-  const humanInterventionNeeded = complaints.filter(
-    (c) => c.triage.humanIntervention.required && c.status !== 'Resolved'
-  ).length;
-
   return (
     <header className="bg-slate-900 border-b border-slate-800 text-white sticky top-0 z-30 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo & Clinical System Branding */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setActiveTab('dashboard')}>
             <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-500 flex items-center justify-center shadow-lg shadow-cyan-900/30">
               <Activity className="h-6 w-6 text-white" />
             </div>
@@ -98,6 +95,18 @@ export const Header: React.FC<HeaderProps> = ({
               <PlusCircle className="h-3.5 w-3.5" />
               <span>New Triage Workbench</span>
             </button>
+
+            <button
+              onClick={() => setActiveTab('upload')}
+              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                activeTab === 'upload'
+                  ? 'bg-teal-600 text-white shadow-sm'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+              }`}
+            >
+              <Upload className="h-3.5 w-3.5" />
+              <span>Upload Data Source</span>
+            </button>
           </nav>
 
           {/* Quick Action Buttons & Critical Banner */}
@@ -148,7 +157,7 @@ export const Header: React.FC<HeaderProps> = ({
               activeTab === 'queue' ? 'text-teal-400 font-bold' : 'text-slate-400'
             }`}
           >
-            Grievances ({complaints.length})
+            Queue ({complaints.length})
           </button>
           <button
             onClick={() => setActiveTab('triage')}
@@ -156,7 +165,15 @@ export const Header: React.FC<HeaderProps> = ({
               activeTab === 'triage' ? 'text-teal-400 font-bold' : 'text-slate-400'
             }`}
           >
-            Triage Assistant
+            Triage
+          </button>
+          <button
+            onClick={() => setActiveTab('upload')}
+            className={`py-1 px-2 rounded ${
+              activeTab === 'upload' ? 'text-teal-400 font-bold' : 'text-slate-400'
+            }`}
+          >
+            Upload Data
           </button>
         </div>
       </div>

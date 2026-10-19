@@ -443,6 +443,59 @@ Patient ID: ${patientIdentifier || 'Anonymous'}`;
   return res.json({ success: true, triage: fallback, engine: 'clinical-rules-fallback' });
 });
 
+// POST /api/batch-triage - Process multiple complaints in batch
+app.post('/api/batch-triage', async (req: Request, res: Response) => {
+  const { items } = req.body;
+
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: 'Valid array of complaint items required.' });
+  }
+
+  const processed = [];
+
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    const text = item.text || item.complaintText || item.narrative || '';
+    if (!text || typeof text !== 'string' || !text.trim()) continue;
+
+    // Use fast clinical triage engine for batch stability
+    const triage = fallbackTriage(text);
+    const trackingNumber = item.trackingNumber || `GRV-${Math.floor(10000 + Math.random() * 90000)}`;
+    const patientIdentifier = item.patientIdentifier || item.patientId || `PT-${Math.floor(1000 + Math.random() * 9000)}`;
+    const source = item.source || 'Imported Batch File';
+    const departmentOrUnit = item.departmentOrUnit || item.unit || 'Ambulatory / Hospital General';
+    const incidentDate = item.incidentDate || new Date().toISOString();
+
+    processed.push({
+      id: `CMP-${Date.now()}-${i}`,
+      trackingNumber,
+      patientIdentifier,
+      patientName: item.patientName || undefined,
+      incidentDate,
+      receivedDate: new Date().toISOString(),
+      source,
+      departmentOrUnit,
+      rawText: text,
+      status: triage.severityLevel === 4 ? 'Clinical Investigation' : 'Triaged',
+      triage,
+      internalNotes: [
+        {
+          id: `note-${Date.now()}-${i}`,
+          author: 'Data Source Batch Importer',
+          timestamp: new Date().toISOString(),
+          content: `Imported via bulk data source. Triaged as ${triage.severityLabel} routed to ${triage.escalationRoute}.`,
+        },
+      ],
+    });
+  }
+
+  return res.json({
+    success: true,
+    count: processed.length,
+    complaints: processed,
+  });
+});
+
 // Production / Dev Vite Serving
 async function startServer() {
   const port = process.env.PORT || 3000;

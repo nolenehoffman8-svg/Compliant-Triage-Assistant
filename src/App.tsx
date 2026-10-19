@@ -11,6 +11,7 @@ import { TriageQueue } from './components/TriageQueue';
 import { TriageDossierModal } from './components/TriageDossierModal';
 import { RegulatoryReferenceModal } from './components/RegulatoryReferenceModal';
 import { PrintableReport } from './components/PrintableReport';
+import { UploadComplaintsDataSource } from './components/UploadComplaintsDataSource';
 import { INITIAL_COMPLAINTS, SEVERITY_LEVEL_INFO } from './data/mockComplaints';
 import {
   ComplaintRecord,
@@ -23,7 +24,7 @@ import {
 
 export default function App() {
   const [complaints, setComplaints] = useState<ComplaintRecord[]>(INITIAL_COMPLAINTS);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'triage' | 'queue'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'triage' | 'queue' | 'upload'>('dashboard');
   const [selectedComplaint, setSelectedComplaint] = useState<ComplaintRecord | null>(null);
   const [printableComplaint, setPrintableComplaint] = useState<ComplaintRecord | null>(null);
   const [isReferenceModalOpen, setIsReferenceModalOpen] = useState(false);
@@ -47,6 +48,11 @@ export default function App() {
   const handleAddComplaintToQueue = (newRecord: ComplaintRecord) => {
     setComplaints((prev) => [newRecord, ...prev]);
     showToast(`Added ${newRecord.trackingNumber} to Triage Queue`);
+  };
+
+  const handleBatchImport = (newRecords: ComplaintRecord[]) => {
+    setComplaints((prev) => [...newRecords, ...prev]);
+    showToast(`Batch imported ${newRecords.length} grievances successfully!`);
   };
 
   const handleUpdateStatus = (complaintId: string, newStatus: ComplaintStatus) => {
@@ -190,6 +196,7 @@ export default function App() {
             onSelectComplaint={(c) => setSelectedComplaint(c)}
             onNavigateToQueueWithFilter={handleNavigateToQueueWithFilter}
             onStartNewTriage={() => setActiveTab('triage')}
+            onNavigateToUpload={() => setActiveTab('upload')}
           />
         )}
 
@@ -206,6 +213,14 @@ export default function App() {
             onSelectComplaint={(c) => setSelectedComplaint(c)}
             onUpdateStatus={handleUpdateStatus}
             initialFilter={queueFilter}
+          />
+        )}
+
+        {activeTab === 'upload' && (
+          <UploadComplaintsDataSource
+            onBatchImport={handleBatchImport}
+            onNavigateToQueue={() => setActiveTab('queue')}
+            onNavigateToDashboard={() => setActiveTab('dashboard')}
           />
         )}
       </main>

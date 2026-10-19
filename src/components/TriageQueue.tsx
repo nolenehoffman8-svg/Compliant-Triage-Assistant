@@ -11,6 +11,7 @@ import {
   RotateCcw,
   ArrowUpDown,
   CheckCircle2,
+  UploadCloud,
 } from 'lucide-react';
 import {
   ComplaintRecord,
@@ -26,6 +27,7 @@ interface TriageQueueProps {
   complaints: ComplaintRecord[];
   onSelectComplaint: (complaint: ComplaintRecord) => void;
   onUpdateStatus: (complaintId: string, newStatus: ComplaintStatus) => void;
+  onNavigateToUpload?: () => void;
   initialFilter?: {
     severity?: SeverityLevel;
     category?: PrimaryCategory;
@@ -38,6 +40,7 @@ export const TriageQueue: React.FC<TriageQueueProps> = ({
   complaints,
   onSelectComplaint,
   onUpdateStatus,
+  onNavigateToUpload,
   initialFilter,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
